@@ -22,6 +22,12 @@ export const queryClient = new QueryClient({
     queries: {
       // useErrorBoundary: true, 해당 옵션을 사용할경우 에러 바운더리로 던짐! - 리액트의 에러 바운더리로 처리가능
       onError: queryErrorHandler,
+      // 아래 해당 옵션을 반드시 권하지는 않음, 전역 설정이 가능하다는 정도만
+      staleTime: 600000,
+      cacheTime: 900000,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
     },
   },
 });
