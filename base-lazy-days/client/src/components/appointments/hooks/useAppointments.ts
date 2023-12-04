@@ -1,6 +1,7 @@
 // @ts-nocheck
 import dayjs from 'dayjs';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { axiosInstance } from '../../../axiosInstance';
 import { queryKeys } from '../../../react-query/constants';
@@ -15,6 +16,7 @@ async function getAppointments(
   month: string,
 ): Promise<AppointmentDateMap> {
   const { data } = await axiosInstance.get(`/appointments/${year}/${month}`);
+  console.log(data, year, month);
   return data;
 }
 
@@ -43,7 +45,6 @@ export function useAppointments(): UseAppointments {
   // state to track current monthYear chosen by user
   // state value is returned in hook return object
   const [monthYear, setMonthYear] = useState(currentMonthYear);
-
   // setter to update monthYear obj in state when user changes month in view,
   // returned in hook return object
   function updateMonthYear(monthIncrement: number): void {
@@ -62,15 +63,30 @@ export function useAppointments(): UseAppointments {
   /** ****************** END 2: filter appointments  ******************** */
   /** ****************** START 3: useQuery  ***************************** */
   // useQuery call for appointments for the current monthYear
+  const queryClient = useQueryClient();
 
-  // TODO: update with useQuery!
+  useEffect(() => {
+    const nextMonthYear = getNewMonthYear(monthYear, 1);
+    queryClient.prefetchQuery(
+      [queryKeys.appointments, nextMonthYear.year, nextMonthYear.month],
+      () => getAppointments(nextMonthYear.year, nextMonthYear.month),
+    );
+  }, [queryClient, monthYear]);
+
   // Notes:
   //    1. appointments is an AppointmentDateMap (object with days of month
   //       as properties, and arrays of appointments for that day as values)
   //
   //    2. The getAppointments query function needs monthYear.year and
   //       monthYear.month
-  const appointments = {};
+  const fallback = {};
+  const { data: appointments = fallback } = useQuery(
+    [queryKeys.appointments, monthYear.year, monthYear.month],
+    () => getAppointments(monthYear.year, monthYear.month),
+    // {
+    // keepPreviousData: true, // 이녀석 자세히 알아보기
+    // },
+  );
 
   /** ****************** END 3: useQuery  ******************************* */
 
