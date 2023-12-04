@@ -107,6 +107,7 @@ export function useAppointments(): UseAppointments {
       refetchOnMount: true,
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
+      refetchInterval: 60000, // 60초마다 다시 refetch
     },
   );
 
