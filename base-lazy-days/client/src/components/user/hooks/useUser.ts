@@ -47,7 +47,13 @@ export function useUser(): UseUser {
 
   // meant to be called from useAuth
   function clearUser() {
+    // 해당 구문에서 removeQueries를 하지 않는 이유는 localStorage와 동기화 시키기 위해서
+    // -> setQuriesData는 캐시 데이터를 변경시킴으로써 onSuccess 콜백이 불리지만, removeQuries는 불리지 않음
+    // -> 위에 따른 결과로 로그아웃 했을 때 removeQueries 호출시 localStorage에 데이터가 남아있을수 있기 떄문
     queryClient.setQueriesData(queryKeys.user, null);
+
+    // 해당 구문에선 localStorage와 관계가 없기에 removeQuries를 사용해도 문제없음.
+    queryClient.removeQueries('user-appointments');
   }
 
   return { user, updateUser, clearUser };

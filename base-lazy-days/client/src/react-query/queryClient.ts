@@ -29,6 +29,9 @@ export const queryClient = new QueryClient({
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     },
+    mutations: {
+      onError: queryErrorHandler,
+    },
   },
 });
 
@@ -98,3 +101,18 @@ export const queryClient = new QueryClient({
 언제나 그렇듯, 과정 Q&A에서 기꺼이 질문에 답해드리겠습니다!
 
  */
+
+// ---
+// 섹션 4의 글에서 전역 쿼리 오류 핸들러를 지정할 수 있는 대체 방법과 이러한 방법의 이점을 다루었습니다. 같은 접근 방식이 적용됩니다. 다음과 같이 QueryClient 객체 인수에 mutationCache 를 추가해야 합니다:
+
+//   export const queryClient = new QueryClient({
+//       queryCache: new QueryCache({
+//         onError: queryErrorHandler,
+//       }),
+//       mutationCache: new MutationCache({
+//         onError: queryErrorHandler,
+//       }),
+//       defaultOptions: {
+//        ...
+//       },
+//     });
